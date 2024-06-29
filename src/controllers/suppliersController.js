@@ -1,12 +1,16 @@
-const Suppliers = require('../database/models/Suppliers');
-
-module.exports = {
+const SupplierRepository = require('../repositories/SupplierRepository');
+class SuppliersController {
+  constructor() {
+    this.repository = new SupplierRepository();
+  }
   async findAll() {
     try {
-      const suppliers = await Suppliers.findAll();
-      return suppliers;
+      const data = await this.repository.findAll();
+      return data;
     } catch (error) {
-      throw error;
+      return { error: 'An error occurred while fetching suppliers' };
     }
-  },
-};
+  }
+}
+
+module.exports = SuppliersController;
