@@ -3,6 +3,10 @@ class SupplierRepository {
   async findAll() {
     return Suppliers.findAll();
   }
+
+  async create(data) {
+    return Suppliers.create(data);
+  }
 }
 
 module.exports = SupplierRepository;

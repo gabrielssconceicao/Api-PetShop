@@ -23,21 +23,13 @@ const columns = {
     type: DataTypes.ENUM('food', 'toys'),
     allowNull: false,
   },
-  created_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-  },
-  updated_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-  },
 };
 
 const options = {
   tableName: 'suppliers',
   createdAt: 'created_at',
   updatedAt: 'updated_at',
-  timestamps: false,
+  timestamps: true,
   freezeTableName: true,
   underscored: true,
 };
