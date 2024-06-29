@@ -1,8 +1,7 @@
 const SupplierRepository = require('../repositories/SupplierRepository');
 class SuppliersController {
-  constructor() {
-    this.repository = new SupplierRepository();
-  }
+  repository = new SupplierRepository();
+
   async findAll() {
     try {
       const data = await this.repository.findAll();
@@ -10,6 +9,27 @@ class SuppliersController {
     } catch (error) {
       return {
         error: 'An error occurred while fetching suppliers',
+        status: 500,
+      };
+    }
+  }
+  async findOne(id) {
+    try {
+      const data = await this.repository.findOne(id);
+      if (!data) {
+        return {
+          body: {
+            error: 'Supplier not found',
+          },
+          status: 404,
+        };
+      }
+      return { body: data, status: 200 };
+    } catch (error) {
+      return {
+        body: {
+          error: 'An error occurred while fetching supplier',
+        },
         status: 500,
       };
     }
@@ -28,7 +48,9 @@ class SuppliersController {
         };
       }
       return {
-        body: 'An error occurred while creating supplier',
+        body: {
+          error: 'An error occurred while creating supplier',
+        },
         status: 500,
       };
     }
