@@ -43,7 +43,9 @@ class SuppliersController {
       if (error.name === 'SequelizeValidationError') {
         const messages = error.errors.map((err) => err.message);
         return {
-          body: messages,
+          body: {
+            error: messages,
+          },
           status: 400,
         };
       }
