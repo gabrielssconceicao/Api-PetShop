@@ -42,6 +42,4 @@ const options = {
   underscored: true,
 };
 
-const Suppliers = database.define('Suppliers', columns, options);
-
-module.exports = Suppliers;
+module.exports = database.define('Suppliers', columns, options);
