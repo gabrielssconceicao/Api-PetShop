@@ -11,6 +11,14 @@ class SupplierRepository {
   async findOne(id) {
     return Suppliers.findByPk(id);
   }
+
+  async update(id, data) {
+    return Suppliers.update(data, {
+      where: {
+        id,
+      },
+    });
+  }
 }
 
 module.exports = SupplierRepository;

@@ -20,4 +20,10 @@ router.post('/', async (req, res) => {
   res.status(status).send(body);
 });
 
+router.put('/:id', async (req, res) => {
+  const controller = new SuppliersController();
+  const { body, status } = await controller.update(req.params.id, req.body);
+  res.status(status).send(body);
+});
+
 module.exports = router;
