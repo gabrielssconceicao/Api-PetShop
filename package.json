@@ -1,17 +1,23 @@
 {
   "name": "api-rest-mysql-sequelize",
   "version": "1.0.0",
+  "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/index.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gabrielssconceicao/Api-Rest-Mysql-Sequelize.git"
+  },
+  "author": "Gabriel Conceição",
   "license": "ISC",
-  "description": "",
+  "bugs": {
+    "url": "https://github.com/gabrielssconceicao/Api-Rest-Mysql-Sequelize/issues"
+  },
+  "homepage": "https://github.com/gabrielssconceicao/Api-Rest-Mysql-Sequelize#readme",
   "dependencies": {
     "dotenv": "^16.4.5",
-    "express": "^4.19.2",
     "mysql2": "^3.10.1",
     "nodemon": "^3.1.4",
     "sequelize": "^6.37.3"
