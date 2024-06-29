@@ -17,18 +17,18 @@ class SuppliersController {
 
   async create(body) {
     try {
-      console.log(body.company);
-      const data = {
-        company: body.company,
-        email: body.email,
-        category: body.category,
-      };
-      const result = await this.repository.create(data);
+      const result = await this.repository.create(body);
       return { body: result, status: 201 };
     } catch (error) {
-      console.log(error);
+      if (error.name === 'SequelizeValidationError') {
+        const messages = error.errors.map((err) => err.message);
+        return {
+          body: messages,
+          status: 400,
+        };
+      }
       return {
-        error: 'An error occurred while creating supplier',
+        body: 'An error occurred while creating supplier',
         status: 500,
       };
     }
