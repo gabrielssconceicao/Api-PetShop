@@ -105,6 +105,30 @@ class SuppliersController {
       };
     }
   }
+
+  async delete(id) {
+    try {
+      const supplier = await this.findOne(id);
+      if (supplier.status === 404) {
+        return supplier;
+      }
+
+      await this.repository.delete(id);
+      return {
+        body: {
+          message: 'Supplier deleted successfully',
+        },
+        status: 200,
+      };
+    } catch (error) {
+      return {
+        body: {
+          error: 'An error occurred while deleting supplier',
+        },
+        status: 500,
+      };
+    }
+  }
 }
 
 module.exports = SuppliersController;

@@ -26,4 +26,10 @@ router.put('/:id', async (req, res) => {
   res.status(status).send(body);
 });
 
+router.delete('/:id', async (req, res) => {
+  const controller = new SuppliersController();
+  const { body, status } = await controller.delete(req.params.id);
+  res.status(status).send(body);
+});
+
 module.exports = router;

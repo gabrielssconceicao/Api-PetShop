@@ -19,6 +19,14 @@ class SupplierRepository {
       },
     });
   }
+
+  async delete(id) {
+    Suppliers.destroy({
+      where: {
+        id,
+      },
+    });
+  }
 }
 
 module.exports = SupplierRepository;
