@@ -5,7 +5,15 @@ class SuppliersController {
   async findAll() {
     try {
       const data = await this.repository.findAll();
-      return { body: data, status: 200 };
+      return {
+        body: data.map(({ id, company, email, category }) => ({
+          id,
+          company,
+          email,
+          category,
+        })),
+        status: 200,
+      };
     } catch (error) {
       return {
         error: 'An error occurred while fetching suppliers',
@@ -24,8 +32,11 @@ class SuppliersController {
           status: 404,
         };
       }
-      return { body: data, status: 200 };
+
+      const { id: _id, company, email, category } = data;
+      return { body: { id, company, email, category }, status: 200 };
     } catch (error) {
+      console.log(error);
       return {
         body: {
           error: 'An error occurred while fetching supplier',
@@ -60,7 +71,8 @@ class SuppliersController {
 
     try {
       const result = await this.repository.create(body);
-      return { body: result, status: 201 };
+      const { id, company, email, category } = result;
+      return { body: { id, company, email, category }, status: 201 };
     } catch (error) {
       if (error.name === 'SequelizeValidationError') {
         const messages = error.errors.map((err) => err.message);
