@@ -6,10 +6,9 @@ class SuppliersController {
     try {
       const data = await this.repository.findAll();
       return {
-        body: data.map(({ id, company, email, category }) => ({
+        body: data.map(({ id, company, category }) => ({
           id,
           company,
-          email,
           category,
         })),
         status: 200,
@@ -33,8 +32,8 @@ class SuppliersController {
         };
       }
 
-      const { id: _id, company, email, category } = data;
-      return { body: { id, company, email, category }, status: 200 };
+      const { id: _id, company, category } = data;
+      return { body: { id, company, category }, status: 200 };
     } catch (error) {
       console.log(error);
       return {
@@ -71,8 +70,8 @@ class SuppliersController {
 
     try {
       const result = await this.repository.create(body);
-      const { id, company, email, category } = result;
-      return { body: { id, company, email, category }, status: 201 };
+      const { id, company, category } = result;
+      return { body: { id, company, category }, status: 201 };
     } catch (error) {
       if (error.name === 'SequelizeValidationError') {
         const messages = error.errors.map((err) => err.message);
