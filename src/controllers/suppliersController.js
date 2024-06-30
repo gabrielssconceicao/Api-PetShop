@@ -36,6 +36,28 @@ class SuppliersController {
   }
 
   async create(body) {
+    const errors = [];
+    if (!body.company || body.company.length < 3 || body.company.length > 255) {
+      errors.push('Company must be between 3 and 255 characters');
+    }
+
+    if (!body.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) {
+      errors.push('Invalid email');
+    }
+
+    if (!['food', 'toys'].includes(body.category)) {
+      errors.push('Category must be food or toys');
+    }
+
+    if (errors.length > 0) {
+      return {
+        body: {
+          error: errors,
+        },
+        status: 400,
+      };
+    }
+
     try {
       const result = await this.repository.create(body);
       return { body: result, status: 201 };
