@@ -103,10 +103,10 @@ class SuppliersController {
         };
       }
 
-      const updatedSupplier = await this.repository.update(id, fieldsToUpdate);
+      await this.repository.update(id, fieldsToUpdate);
       return {
-        body: updatedSupplier,
-        status: 200,
+        body: [],
+        status: 204,
       };
     } catch (error) {
       if (error.name === 'SequelizeValidationError') {
