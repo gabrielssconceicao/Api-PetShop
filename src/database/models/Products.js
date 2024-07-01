@@ -24,13 +24,13 @@ const columns = {
     allowNull: false,
     defaultValue: 0,
   },
-  supplier: {
+  supplierId: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: Supplier;
+      model: Supplier,
       key: 'id',
-    }
+    },
   },
   created_at: {
     type: DataTypes.DATE,
@@ -48,10 +48,14 @@ const options = {
   updatedAt: 'updated_at',
   timestamps: true,
   freezeTableName: true,
-  underscored: true,
+  underscored: false,
 };
 
-const Product =  database.define('Products', columns, options);
+const Product = database.define('Products', columns, options);
 Product.belongsTo(Supplier);
-
-module.exports = Product
+Supplier.hasMany(Product, {
+  foreignKey: 'supplierId',
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE',
+});
+module.exports = Product;

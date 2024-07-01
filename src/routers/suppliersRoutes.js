@@ -1,5 +1,7 @@
 const { Router } = require('express');
 const SuppliersController = require('../controllers/suppliersController');
+const productRoutes = require('./productRoutes');
+
 const router = Router();
 
 router.get('/', async (req, res) => {
@@ -8,19 +10,15 @@ router.get('/', async (req, res) => {
   res.status(status).send(body);
 });
 
-router.get('/:id', async (req, res) => {
-  const controller = new SuppliersController();
-  const { body, status } = await controller.findOne(req.params.id);
-  res.status(status).send(body);
-});
-
-router.get('/:id/products', async (req, res) => {
-  res.send({ body: `Suppliers Products ${req.params.id}`, status: 200 });
-});
-
 router.post('/', async (req, res) => {
   const controller = new SuppliersController();
   const { body, status } = await controller.create(req.body);
+  res.status(status).send(body);
+});
+
+router.get('/:id', async (req, res) => {
+  const controller = new SuppliersController();
+  const { body, status } = await controller.findOne(req.params.id);
   res.status(status).send(body);
 });
 
@@ -35,5 +33,7 @@ router.delete('/:id', async (req, res) => {
   const { body, status } = await controller.delete(req.params.id);
   res.status(status).send(body);
 });
+
+router.use('/:idSupplier/products', productRoutes);
 
 module.exports = router;
