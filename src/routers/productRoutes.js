@@ -19,4 +19,11 @@ router.post('/', async (req, res) => {
   res.status(status).send(body);
 });
 
+router.delete('/:productId', async (req, res) => {
+  const controller = new ProductController();
+  data = { id: req.params.productId, supplierId: req.params.idSupplier };
+  const { body, status } = await controller.delete(data);
+  res.status(status).send(body);
+});
+
 module.exports = router;

@@ -50,6 +50,23 @@ class ProductController {
       };
     }
   }
+
+  async delete(body) {
+    try {
+      await this.repository.delete(body);
+      return {
+        body: null,
+        status: 204,
+      };
+    } catch (error) {
+      return {
+        body: {
+          error: 'An error occurred while deleting product',
+        },
+        status: 500,
+      };
+    }
+  }
 }
 
 module.exports = ProductController;

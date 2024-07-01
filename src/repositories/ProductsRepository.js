@@ -12,6 +12,10 @@ class ProductsRepository {
   async create(data) {
     return Product.create(data);
   }
+
+  async delete(data) {
+    return Product.destroy({ where: data });
+  }
 }
 
 module.exports = ProductsRepository;
