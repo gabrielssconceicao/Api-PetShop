@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const SuppliersController = require('../controllers/suppliersController');
 const productRoutes = require('./productRoutes');
+const validateSupplier = require('../middlewares/validateSupplier');
 
 const router = Router();
 
@@ -34,6 +35,6 @@ router.delete('/:id', async (req, res) => {
   res.status(status).send(body);
 });
 
-router.use('/:idSupplier/products', productRoutes);
+router.use('/:idSupplier/products', validateSupplier, productRoutes);
 
 module.exports = router;

@@ -1,4 +1,4 @@
-const ProductRepository = require('../repositories/ProductsRepository');
+const ProductRepository = require('../repositories/ProductRepository');
 
 class ProductController {
   repository = new ProductRepository();
@@ -14,11 +14,7 @@ class ProductController {
       errors.push('Stock must be a positive integer number');
     }
 
-    if (
-      product.price < 0 ||
-      typeof product.price !== 'number' ||
-      (typeof product.price === 'number' && product.price % 1 !== 0)
-    ) {
+    if (product.price < 0 || typeof product.price !== 'number') {
       errors.push('Price must be a positive float number');
     }
 
@@ -48,6 +44,7 @@ class ProductController {
   async create(body) {
     try {
       const errors = this.validateProduct(body);
+
       if (errors.length) {
         return {
           body: {
@@ -63,7 +60,6 @@ class ProductController {
       };
     } catch (error) {
       if (error.name === 'SequelizeValidationError') {
-        console.log(error);
         const messages = error.errors.map((err) => err.message);
         return {
           body: {
@@ -72,7 +68,6 @@ class ProductController {
           status: 400,
         };
       }
-      console.log(error);
       return {
         body: {
           error: 'An error occurred while creating product',
