@@ -8,6 +8,10 @@ class ProductsRepository {
       },
     });
   }
+
+  async create(data) {
+    return Product.create(data);
+  }
 }
 
 module.exports = ProductsRepository;
