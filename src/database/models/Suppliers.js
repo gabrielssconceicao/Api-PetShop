@@ -3,6 +3,7 @@ const Sequelize = require('sequelize');
 const database = require('..');
 
 const { DataTypes } = Sequelize;
+const Product = require('./Products');
 
 const columns = {
   id: {
@@ -59,4 +60,12 @@ const options = {
   underscored: true,
 };
 
-module.exports = database.define('Suppliers', columns, options);
+const Supplier = database.define('Suppliers', columns, options);
+
+Suppliers.hasMany(Product, {
+  foreignKey: 'supplierId',
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE',
+});
+
+module.exports = Supplier;

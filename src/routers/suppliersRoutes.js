@@ -14,6 +14,10 @@ router.get('/:id', async (req, res) => {
   res.status(status).send(body);
 });
 
+router.get('/:id/products', async (req, res) => {
+  res.send({ body: `Suppliers Products ${req.params.id}`, status: 200 });
+});
+
 router.post('/', async (req, res) => {
   const controller = new SuppliersController();
   const { body, status } = await controller.create(req.body);
