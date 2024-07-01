@@ -21,16 +21,16 @@ class ProductController {
     return errors;
   }
 
+  deserializeProduct(product) {
+    const { id, name, price, stock } = product;
+    return { id, name, price, stock };
+  }
+
   async findAll(supplierId) {
     try {
       const products = await this.repository.findAll(supplierId);
       return {
-        body: products.map(({ id, name, price, stock }) => ({
-          id,
-          name,
-          price,
-          stock,
-        })),
+        body: products.map((product) => this.deserializeProduct(product)),
         status: 200,
       };
     } catch (error) {
@@ -53,9 +53,9 @@ class ProductController {
           status: 400,
         };
       }
-      const { id, name, price, stock } = await this.repository.create(body);
+      const product = await this.repository.create(body);
       return {
-        body: { id, name, price, stock },
+        body: this.deserializeProduct(product),
         status: 201,
       };
     } catch (error) {
