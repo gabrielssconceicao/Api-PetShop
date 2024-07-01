@@ -35,9 +35,6 @@ const columns = {
       notNull: {
         msg: 'Price is required',
       },
-      isFloat: {
-        msg: 'Price must be a number',
-      },
     },
   },
   stock: {

@@ -3,6 +3,28 @@ const ProductRepository = require('../repositories/ProductsRepository');
 class ProductController {
   repository = new ProductRepository();
 
+  validateProduct(product) {
+    const errors = [];
+
+    if (!product.name || product.name.length < 3 || product.name.length > 255) {
+      errors.push('Product name must be between 3 and 255 characters');
+    }
+
+    if (product.stock < 0 || !Number.isInteger(product.stock)) {
+      errors.push('Stock must be a positive integer number');
+    }
+
+    if (
+      product.price < 0 ||
+      typeof product.price !== 'number' ||
+      (typeof product.price === 'number' && product.price % 1 !== 0)
+    ) {
+      errors.push('Price must be a positive float number');
+    }
+
+    return errors;
+  }
+
   async findAll(supplierId) {
     try {
       const products = await this.repository.findAll(supplierId);
@@ -25,6 +47,15 @@ class ProductController {
 
   async create(body) {
     try {
+      const errors = this.validateProduct(body);
+      if (errors.length) {
+        return {
+          body: {
+            error: errors,
+          },
+          status: 400,
+        };
+      }
       const { id, name, price, stock } = await this.repository.create(body);
       return {
         body: { id, name, price, stock },
