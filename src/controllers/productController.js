@@ -41,6 +41,29 @@ class ProductController {
     }
   }
 
+  async findOne(supplierId, productId) {
+    try {
+      const result = await this.repository.findOne(supplierId, productId);
+      if (!result) {
+        return {
+          body: 'Product not found',
+          status: 404,
+        };
+      }
+      return {
+        body: this.deserializeProduct(result),
+        status: 200,
+      };
+    } catch (error) {
+      return {
+        body: {
+          error: 'An error occurred while fetching product',
+        },
+        status: 500,
+      };
+    }
+  }
+
   async create(body) {
     try {
       const errors = this.validateProduct(body);

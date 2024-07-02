@@ -10,6 +10,13 @@ router.get('/', async (req, res) => {
   res.status(status).send(body);
 });
 
+router.get('/:productId', async (req, res) => {
+  const controller = new ProductsController();
+  const { idSupplier, productId } = req.params;
+  const { body, status } = await controller.findOne(idSupplier, productId);
+  res.status(status).send(body);
+});
+
 router.post('/', async (req, res) => {
   const controller = new ProductsController();
   const { idSupplier } = req.params;

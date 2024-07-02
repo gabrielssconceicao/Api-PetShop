@@ -9,6 +9,15 @@ class ProductsRepository {
     });
   }
 
+  async findOne(supplierId, productId) {
+    return Product.findOne({
+      where: {
+        id: productId,
+        supplierId,
+      },
+    });
+  }
+
   async create(data) {
     return Product.create(data);
   }
