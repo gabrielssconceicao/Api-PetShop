@@ -22,6 +22,10 @@ class ProductsRepository {
     return Product.create(data);
   }
 
+  async update({ fieldsToUpdate, ...data }) {
+    return Product.update(fieldsToUpdate, { where: data });
+  }
+
   async delete(data) {
     return Product.destroy({ where: data });
   }

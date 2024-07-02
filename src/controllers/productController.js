@@ -21,6 +21,19 @@ class ProductController {
     return errors;
   }
 
+  validateUpdateProduct(product) {
+    const errors = [];
+    const fields = ['name', 'price', 'stock'];
+    const fieldsToUpdate = {};
+    fields.forEach((field) => {
+      if (product[field]) {
+        fieldsToUpdate[field] = product[field];
+      }
+    });
+
+    return fieldsToUpdate;
+  }
+
   deserializeProduct(product) {
     const { id, name, price, stock } = product;
     return { id, name, price, stock };
@@ -94,6 +107,44 @@ class ProductController {
       return {
         body: {
           error: 'An error occurred while creating product',
+        },
+        status: 500,
+      };
+    }
+  }
+
+  async update(body) {
+    try {
+      const { id, supplierId, ...data } = body;
+      const fieldsToUpdate = this.validateUpdateProduct(data);
+      if (Object.keys(fieldsToUpdate).length === 0) {
+        return {
+          body: {
+            error: 'No fields to update',
+          },
+          status: 400,
+        };
+      }
+
+      await this.repository.update({ id, supplierId, fieldsToUpdate });
+      return {
+        body: null,
+        status: 204,
+      };
+    } catch (error) {
+      if (error.name === 'SequelizeValidationError') {
+        const messages = error.errors.map((err) => err.message);
+        return {
+          body: {
+            error: messages,
+          },
+          status: 400,
+        };
+      }
+      console.log(error);
+      return {
+        body: {
+          error: 'An error occurred while updating product',
         },
         status: 500,
       };

@@ -1,6 +1,5 @@
 const { Router } = require('express');
 const ProductsController = require('../controllers/productController');
-const ProductController = require('../controllers/productController');
 
 const router = Router({ mergeParams: true });
 
@@ -26,8 +25,16 @@ router.post('/', async (req, res) => {
   res.status(status).send(body);
 });
 
+router.put('/:productId', async (req, res) => {
+  const controller = new ProductsController();
+  const { idSupplier, productId } = req.params;
+  const data = { ...req.body, supplierId: idSupplier, id: productId };
+  const { body, status } = await controller.update(data);
+  res.status(status).send(body);
+});
+
 router.delete('/:productId', async (req, res) => {
-  const controller = new ProductController();
+  const controller = new ProductsController();
   data = { id: req.params.productId, supplierId: req.params.idSupplier };
   const { body, status } = await controller.delete(data);
   res.status(status).send(body);
