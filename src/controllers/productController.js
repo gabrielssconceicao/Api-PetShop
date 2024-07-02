@@ -46,7 +46,7 @@ class ProductController {
       const result = await this.repository.findOne(supplierId, productId);
       if (!result) {
         return {
-          body: 'Product not found',
+          body: { error: 'Product not found' },
           status: 404,
         };
       }
