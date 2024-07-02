@@ -40,4 +40,12 @@ router.delete('/:productId', async (req, res) => {
   res.status(status).send(body);
 });
 
+router.post('/:productId/reduce-stock', async (req, res) => {
+  const controller = new ProductsController();
+  const { idSupplier, productId } = req.params;
+  const data = { ...req.body, supplierId: idSupplier, id: productId };
+  const { body, status } = await controller.reduceStock(data);
+  res.status(status).send(body);
+});
+
 module.exports = router;

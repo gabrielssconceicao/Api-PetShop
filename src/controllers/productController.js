@@ -167,6 +167,35 @@ class ProductController {
       };
     }
   }
+
+  async reduceStock(body) {
+    try {
+      const { id, supplierId, ...data } = body;
+      const product = await this.repository.findOne(supplierId, id);
+      const { stock } = product;
+      if (stock < data.quantity || data.quantity < 0) {
+        return {
+          body: {
+            error: 'Stock is not enough',
+          },
+          status: 400,
+        };
+      }
+      const newStock = stock - data.quantity;
+      await this.repository.reduceStock({ id, supplierId, stock: newStock });
+      return {
+        body: null,
+        status: 204,
+      };
+    } catch (error) {
+      return {
+        body: {
+          error: 'An error occurred while reducing stock',
+        },
+        status: 500,
+      };
+    }
+  }
 }
 
 module.exports = ProductController;

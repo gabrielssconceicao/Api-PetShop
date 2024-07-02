@@ -29,6 +29,10 @@ class ProductsRepository {
   async delete(data) {
     return Product.destroy({ where: data });
   }
+
+  async reduceStock({ stock, ...data }) {
+    return Product.update({ stock }, { where: data });
+  }
 }
 
 module.exports = ProductsRepository;
