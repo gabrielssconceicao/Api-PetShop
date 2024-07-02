@@ -1,4 +1,5 @@
 const Product = require('../database/models/Products');
+const database = require('../database');
 
 class ProductsRepository {
   async findAll(supplierId) {
@@ -30,8 +31,19 @@ class ProductsRepository {
     return Product.destroy({ where: data });
   }
 
-  async reduceStock({ stock, ...data }) {
-    return Product.update({ stock }, { where: data });
+  async reduceStock({ id, supplierId, stock }) {
+    const transaction = await database.transaction();
+    try {
+      await Product.update(
+        { stock },
+        { where: { id, supplierId }, transaction }
+      );
+
+      await transaction.commit();
+    } catch (error) {
+      await transaction.rollback();
+      // throw new Error('Error reducing stock');
+    }
   }
 }
 
