@@ -15,8 +15,8 @@ You can find the project on GitHub [here](https://github.com/gabrielssconceicao/
   - [Installation](#installation)
     - [Clone the repository:](#clone-the-repository)
     - [Install Dependences](#install-dependences)
+    - [Configuration](#configuration)
     - [Run the project](#run-the-project)
-  - [Configuration](#configuration)
   - [Routes](#routes)
     - [Suppliers](#suppliers)
       - [Create Supplier](#create-supplier)
@@ -59,15 +59,16 @@ cd repo
 npm install
 ```
 
+### Configuration
+
+- Rename the `.env-example` file to `.env`.
+- Update the `.env` file with your database configuration and other necessary environment variables.
+
 ### Run the project
 ```bash
 npm start
 ```
 
-## Configuration
-
-- Rename the `.env-example` file to `.env`.
-- Update the `.env` file with your database configuration and other necessary environment variables.
 
 ## Routes
 
