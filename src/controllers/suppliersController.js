@@ -28,6 +28,43 @@ class SuppliersController {
     return errors;
   }
 
+  getUpdateFields(body) {
+    const fields = ['company', 'email', 'category'];
+    const fieldsToUpdate = {};
+
+    fields.forEach((field) => {
+      if (body[field]) {
+        fieldsToUpdate[field] = body[field];
+      }
+    });
+
+    return fieldsToUpdate;
+  }
+
+  validateUpdateSupplier(supplier) {
+    const errors = [];
+
+    if (
+      supplier.company &&
+      this.validator.validateString(supplier.company, 3, 255)
+    ) {
+      errors.push('Company must be between 3 and 255 characters');
+    }
+
+    if (supplier.email && this.validator.validateEmail(supplier.email)) {
+      errors.push('Invalid email');
+    }
+
+    if (
+      supplier.category &&
+      this.validator.validateCategory(supplier.category, ['food', 'toys'])
+    ) {
+      errors.push('Category must be food or toys');
+    }
+
+    return errors;
+  }
+
   async findAll() {
     try {
       const suppliers = await this.repository.findAll();
@@ -82,16 +119,14 @@ class SuppliersController {
       if (result.status === 404) {
         return result;
       }
-      const fields = ['company', 'email', 'category'];
-      const fieldsToUpdate = {};
-      fields.forEach((field) => {
-        if (body[field]) {
-          fieldsToUpdate[field] = body[field];
-        }
-      });
 
+      const fieldsToUpdate = this.getUpdateFields(body);
       if (Object.keys(fieldsToUpdate).length === 0) {
         return responses.badRequest('No fields to update');
+      }
+      const errors = this.validateUpdateSupplier(body);
+      if (errors.length) {
+        return responses.badRequest(errors);
       }
 
       await this.repository.update(id, fieldsToUpdate);
