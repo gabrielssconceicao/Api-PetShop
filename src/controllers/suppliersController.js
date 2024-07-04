@@ -1,11 +1,31 @@
 const SupplierRepository = require('../repositories/SupplierRepository');
 const responses = require('../helpers/responses');
+const Validator = require('../helpers/validator');
 class SuppliersController {
   repository = new SupplierRepository();
+  validator = new Validator();
 
   deserialize(data) {
     const { id, company, category } = data;
     return { id, company, category };
+  }
+
+  validateCreateSupplier(supplier) {
+    const errors = [];
+
+    if (this.validator.validateString(supplier.company, 3, 255)) {
+      errors.push('Company must be between 3 and 255 characters');
+    }
+
+    if (this.validator.validateEmail(supplier.email)) {
+      errors.push('Invalid email');
+    }
+
+    if (this.validator.validateCategory(supplier.category, ['food', 'toys'])) {
+      errors.push('Category must be food or toys');
+    }
+
+    return errors;
   }
 
   async findAll() {
@@ -37,24 +57,13 @@ class SuppliersController {
   }
 
   async create(body) {
-    const errors = [];
-    if (!body.company || body.company.length < 3 || body.company.length > 255) {
-      errors.push('Company must be between 3 and 255 characters');
-    }
-
-    if (!body.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) {
-      errors.push('Invalid email');
-    }
-
-    if (!['food', 'toys'].includes(body.category)) {
-      errors.push('Category must be food or toys');
-    }
-
-    if (errors.length > 0) {
-      return responses.badRequest(errors);
-    }
-
     try {
+      const errors = this.validateCreateSupplier(body);
+
+      if (errors.length > 0) {
+        return responses.badRequest(errors);
+      }
+
       const supplier = await this.repository.create(body);
 
       return responses.created(this.deserialize(supplier));
