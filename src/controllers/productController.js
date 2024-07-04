@@ -33,19 +33,20 @@ class ProductController {
     return fieldsToUpdate;
   }
 
-  deserializeProduct(product) {
+  deserialize(product) {
     const { id, name, price, stock } = product;
     return { id, name, price, stock };
   }
 
-  async findAll(supplierId) {
+  async findAllBySupplier(supplierId) {
     try {
       const products = await this.repository.findAll(supplierId);
       return {
-        body: products.map((product) => this.deserializeProduct(product)),
+        body: products.map((product) => this.deserialize(product)),
         status: 200,
       };
     } catch (error) {
+      console.log(error);
       return {
         error: 'An error occurred while fetching products',
         status: 500,
@@ -63,7 +64,7 @@ class ProductController {
         };
       }
       return {
-        body: this.deserializeProduct(result),
+        body: this.deserialize(result),
         status: 200,
       };
     } catch (error) {
@@ -90,7 +91,7 @@ class ProductController {
       }
       const product = await this.repository.create(body);
       return {
-        body: this.deserializeProduct(product),
+        body: this.deserialize(product),
         status: 201,
       };
     } catch (error) {

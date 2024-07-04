@@ -5,7 +5,9 @@ const router = Router({ mergeParams: true });
 
 router.get('/', async (req, res) => {
   const controller = new ProductsController();
-  const { body, status } = await controller.findAll(req.params.idSupplier);
+  const { body, status } = await controller.findAllBySupplier(
+    req.params.supplierId
+  );
   res.status(status).send(body);
 });
 

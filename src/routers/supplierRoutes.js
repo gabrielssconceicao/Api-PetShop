@@ -35,6 +35,6 @@ router.delete('/:id', async (req, res) => {
   res.status(status).send(body);
 });
 
-router.use('/:idSupplier/products', validateSupplier, productRoutes);
+router.use('/:supplierId/products', validateSupplier, productRoutes);
 
 module.exports = router;
