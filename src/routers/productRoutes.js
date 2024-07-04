@@ -13,40 +13,43 @@ router.get('/', async (req, res) => {
 
 router.get('/:productId', async (req, res) => {
   const controller = new ProductsController();
-  const { idSupplier, productId } = req.params;
-  const { body, status } = await controller.findOne(idSupplier, productId);
+  const { body, status } = await controller.findOne(...req.params);
   res.status(status).send(body);
 });
 
 router.post('/', async (req, res) => {
   const controller = new ProductsController();
-  const { idSupplier } = req.params;
-
-  const data = { ...req.body, supplierId: idSupplier };
-  const { body, status } = await controller.create(data);
+  const { supplierId } = req.params;
+  const { body, status } = await controller.create({ ...req.body, supplierId });
   res.status(status).send(body);
 });
 
 router.put('/:productId', async (req, res) => {
   const controller = new ProductsController();
-  const { idSupplier, productId } = req.params;
-  const data = { ...req.body, supplierId: idSupplier, id: productId };
-  const { body, status } = await controller.update(data);
+  // const { supplierId, productId } = req.params;
+  // const data = { ...req.body, req.params };
+  const { body, status } = await controller.update({
+    ...req.body,
+    ...req.params,
+  });
   res.status(status).send(body);
 });
 
 router.delete('/:productId', async (req, res) => {
   const controller = new ProductsController();
-  data = { id: req.params.productId, supplierId: req.params.idSupplier };
-  const { body, status } = await controller.delete(data);
+  // data = { id: req.params.productId, supplierId: req.params.idSupplier };
+  const { body, status } = await controller.delete(...req.params);
   res.status(status).send(body);
 });
 
 router.post('/:productId/reduce-stock', async (req, res) => {
   const controller = new ProductsController();
-  const { idSupplier, productId } = req.params;
-  const data = { ...req.body, supplierId: idSupplier, id: productId };
-  const { body, status } = await controller.reduceStock(data);
+  // const { idSupplier, productId } = req.params;
+  // const data = { ...req.body, supplierId: idSupplier, id: productId };
+  const { body, status } = await controller.reduceStock({
+    ...req.body,
+    ...req.params,
+  });
   res.status(status).send(body);
 });
 
