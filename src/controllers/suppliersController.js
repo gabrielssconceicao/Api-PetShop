@@ -1,6 +1,7 @@
 const SupplierRepository = require('../repositories/SupplierRepository');
 const responses = require('../helpers/responses');
 const Validator = require('../helpers/validator');
+const SupplierWithProductsError = require('../errors/SupplierWithProductsError');
 class SuppliersController {
   repository = new SupplierRepository();
   validator = new Validator();
@@ -153,6 +154,9 @@ class SuppliersController {
       await this.repository.delete(id);
       return responses.noContent();
     } catch (error) {
+      if (error instanceof SupplierWithProductsError) {
+        return responses.badRequest(error.message);
+      }
       return responses.internalServerError(
         'An error occurred while deleting supplier'
       );

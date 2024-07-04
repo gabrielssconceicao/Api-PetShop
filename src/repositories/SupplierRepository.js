@@ -1,4 +1,6 @@
 const Suppliers = require('../database/models/Suppliers');
+const ProductsRepository = require('./ProductRepository');
+const SupplierWithProductsError = require('../errors/SupplierWithProductsError');
 class SupplierRepository {
   async findAll() {
     return Suppliers.findAll();
@@ -21,6 +23,12 @@ class SupplierRepository {
   }
 
   async delete(id) {
+    const products = await new ProductsRepository().findAll(id);
+    if (products.length > 0) {
+      throw new SupplierWithProductsError(
+        'Cannot delete supplier with products'
+      );
+    }
     Suppliers.destroy({
       where: {
         id,
