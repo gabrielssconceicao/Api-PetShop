@@ -1,4 +1,4 @@
-const SuppliersController = require('../controllers/suppliersController');
+const SupplierController = require('../controllers/supplierController');
 
 module.exports = async (req, res, next) => {
   try {
@@ -6,8 +6,7 @@ module.exports = async (req, res, next) => {
     const { body, status } = await controller.findOne(req.params.idSupplier);
 
     if (status === 200) {
-      req.supplier = body; // Armazena o fornecedor encontrado no objeto req para uso posterior
-      next(); // Chama o próximo middleware ou rota
+      next();
     } else {
       res.status(status).send(body);
     }
