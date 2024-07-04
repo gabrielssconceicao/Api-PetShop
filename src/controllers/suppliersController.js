@@ -1,47 +1,38 @@
 const SupplierRepository = require('../repositories/SupplierRepository');
+const responses = require('../helpers/responses');
 class SuppliersController {
   repository = new SupplierRepository();
 
+  deserialize(data) {
+    const { id, company, category } = data;
+    return { id, company, category };
+  }
+
   async findAll() {
     try {
-      const data = await this.repository.findAll();
-      return {
-        body: data.map(({ id, company, category }) => ({
-          id,
-          company,
-          category,
-        })),
-        status: 200,
-      };
+      const suppliers = await this.repository.findAll();
+      return responses.ok(
+        suppliers.map((supplier) => this.deserialize(supplier))
+      );
     } catch (error) {
-      return {
-        error: 'An error occurred while fetching suppliers',
-        status: 500,
-      };
+      return responses.internalServerError(
+        'An error occurred while fetching suppliers'
+      );
     }
   }
   async findOne(id) {
     try {
-      const data = await this.repository.findOne(id);
-      if (!data) {
-        return {
-          body: {
-            error: 'Supplier not found',
-          },
-          status: 404,
-        };
+      const supplier = await this.repository.findOne(id);
+      if (!supplier) {
+        return responses.notFound('Supplier not found');
       }
 
-      const { id: _id, company, category } = data;
-      return { body: { id, company, category }, status: 200 };
+      return responses.ok(this.deserialize(supplier));
     } catch (error) {
       console.log(error);
-      return {
-        body: {
-          error: 'An error occurred while fetching supplier',
-        },
-        status: 500,
-      };
+      return responses.internalServerError(
+        'An error occurred while fetching supplier'
+      );
     }
   }
 
@@ -60,34 +51,19 @@ class SuppliersController {
     }
 
     if (errors.length > 0) {
-      return {
-        body: {
-          error: errors,
-        },
-        status: 400,
-      };
+      return responses.badRequest(errors);
     }
 
     try {
-      const result = await this.repository.create(body);
-      const { id, company, category } = result;
-      return { body: { id, company, category }, status: 201 };
+      const supplier = await this.repository.create(body);
+
+      return responses.created(this.deserialize(supplier));
     } catch (error) {
       if (error.name === 'SequelizeValidationError') {
-        const messages = error.errors.map((err) => err.message);
-        return {
-          body: {
-            error: messages,
-          },
-          status: 400,
-        };
+        const errors = error.errors.map((err) => err.message);
+        return responses.badRequest(errors);
       }
-      return {
-        body: {
-          error: 'An error occurred while creating supplier',
-        },
-        status: 500,
-      };
+      return internalServerError('An error occurred while creating supplier');
     }
   }
 
@@ -106,36 +82,20 @@ class SuppliersController {
       });
 
       if (Object.keys(fieldsToUpdate).length === 0) {
-        return {
-          body: {
-            error: 'No fields to update',
-          },
-          status: 400,
-        };
+        return responses.badRequest('No fields to update');
       }
 
       await this.repository.update(id, fieldsToUpdate);
-      return {
-        body: [],
-        status: 204,
-      };
+      return responses.noContent();
     } catch (error) {
       if (error.name === 'SequelizeValidationError') {
-        const messages = error.errors.map((err) => err.message);
-        return {
-          body: {
-            error: messages,
-          },
-          status: 400,
-        };
+        const errors = error.errors.map((err) => err.message);
+        return responses.badRequest(errors);
       }
 
-      return {
-        body: {
-          error: 'An error occurred while updating supplier',
-        },
-        status: 500,
-      };
+      return responses.internalServerError(
+        'An error occurred while updating supplier'
+      );
     }
   }
 
@@ -147,19 +107,11 @@ class SuppliersController {
       }
 
       await this.repository.delete(id);
-      return {
-        body: {
-          message: 'Supplier deleted successfully',
-        },
-        status: 200,
-      };
+      return responses.noContent();
     } catch (error) {
-      return {
-        body: {
-          error: 'An error occurred while deleting supplier',
-        },
-        status: 500,
-      };
+      return responses.internalServerError(
+        'An error occurred while deleting supplier'
+      );
     }
   }
 }

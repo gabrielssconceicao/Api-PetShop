@@ -10,7 +10,7 @@ const created = (data) => {
     status: 201,
   };
 };
-const noContent = (data) => {
+const noContent = () => {
   return {
     body: null,
     status: 204,
