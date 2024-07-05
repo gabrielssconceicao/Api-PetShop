@@ -51,14 +51,33 @@ class ProductController {
     return fieldsToUpdate;
   }
 
-  deserialize(product) {
+  deserialize(product, otherFields = null) {
     const { id, name, price, stock } = product;
-    return { id, name, price, stock };
+    const extrafields = {};
+    if (otherFields) {
+      otherFields.forEach((field) => {
+        extrafields[field] = product[field];
+      });
+    }
+    return { id, name, price, stock, ...extrafields };
+  }
+
+  async findAll() {
+    try {
+      const products = await this.repository.findAll();
+      return responses.ok(
+        products.map((product) => this.deserialize(product, ['supplierId']))
+      );
+    } catch (error) {
+      return responses.internalServerError(
+        'An error occurred while fetching products'
+      );
+    }
   }
 
   async findAllBySupplier(supplierId) {
     try {
-      const products = await this.repository.findAll(supplierId);
+      const products = await this.repository.findAllBySupplier(supplierId);
       return responses.ok(products.map((product) => this.deserialize(product)));
     } catch (error) {
       return responses.internalServerError(

@@ -2,7 +2,11 @@ const Product = require('../database/models/Products');
 const database = require('../database');
 
 class ProductsRepository {
-  async findAll(supplierId) {
+  async findAll() {
+    return Product.findAll();
+  }
+
+  async findAllBySupplier(supplierId) {
     return Product.findAll({
       where: {
         supplierId,
