@@ -17,6 +17,8 @@ You can find the project on GitHub [here](https://github.com/gabrielssconceicao/
     - [Install Dependences](#install-dependences)
     - [Configuration](#configuration)
     - [Run the project](#run-the-project)
+  - [Supported Data Formats](#supported-data-formats)
+    - [Header Examples](#header-examples)
   - [Routes](#routes)
     - [Suppliers](#suppliers)
       - [Create Supplier](#create-supplier)
@@ -44,6 +46,7 @@ This API uses MySQL as the relational database management system.
 ### Sequelize
 Sequelize is used as the ORM (Object-Relational Mapping) for interacting with the MySQL database.
 
+
 ## Installation
 
 ### Clone the repository:
@@ -69,6 +72,13 @@ npm install
 npm start
 ```
 
+## Supported Data Formats
+
+The API accepts and returns data in JSON format. Make sure to set the appropriate headers for your HTTP requests.
+
+### Header Examples
+
+To send a request with JSON data, use the `Content-Type: application/json` header.
 
 ## Routes
 
@@ -137,15 +147,16 @@ npm start
 
 ### Products
 
+#### Find All Products
+
 - **Method**: `GET`
 
 - **Route**: `/api/products`
 
 - **Description**: Returns all the products sold by all suppliers.
+  
 
-#### Find All Products
-
-- Before the route is called, it will be checked whether the supplier exists
+Before the route is called, it will be checked whether the supplier exists.
 
 #### Create Product
 
