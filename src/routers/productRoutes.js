@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const ProductsController = require('../controllers/productController');
+const ProductsController = require('../controllers/ProductController');
 
 const router = Router({ mergeParams: true });
 
@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
 
 router.get('/:productId', async (req, res) => {
   const controller = new ProductsController();
-  const { body, status } = await controller.findOne(...req.params);
+  const { body, status } = await controller.findOne({ ...req.params });
   res.status(status).send(body);
 });
 
@@ -26,8 +26,6 @@ router.post('/', async (req, res) => {
 
 router.put('/:productId', async (req, res) => {
   const controller = new ProductsController();
-  // const { supplierId, productId } = req.params;
-  // const data = { ...req.body, req.params };
   const { body, status } = await controller.update({
     ...req.body,
     ...req.params,
@@ -37,19 +35,7 @@ router.put('/:productId', async (req, res) => {
 
 router.delete('/:productId', async (req, res) => {
   const controller = new ProductsController();
-  // data = { id: req.params.productId, supplierId: req.params.idSupplier };
-  const { body, status } = await controller.delete(...req.params);
-  res.status(status).send(body);
-});
-
-router.post('/:productId/reduce-stock', async (req, res) => {
-  const controller = new ProductsController();
-  // const { idSupplier, productId } = req.params;
-  // const data = { ...req.body, supplierId: idSupplier, id: productId };
-  const { body, status } = await controller.reduceStock({
-    ...req.body,
-    ...req.params,
-  });
+  const { body, status } = await controller.delete({ ...req.params });
   res.status(status).send(body);
 });
 

@@ -11,6 +11,14 @@ class Validator {
   validateCategory(category, options) {
     return !category || !options.includes(category);
   }
+
+  isPositiveInteger(value) {
+    return Number.isInteger(value) || value < 0;
+  }
+
+  isPositiveFloat(value) {
+    return (Number(value) === value && !Number.isInteger(value)) || value < 0;
+  }
 }
 
 module.exports = Validator;

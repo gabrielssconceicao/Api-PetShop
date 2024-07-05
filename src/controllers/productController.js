@@ -1,27 +1,45 @@
 const ProductRepository = require('../repositories/ProductRepository');
+const responses = require('../helpers/responses');
+const Validator = require('../helpers/validator');
 class ProductController {
   repository = new ProductRepository();
+  validator = new Validator();
 
-  validateProduct(product) {
+  validateCreateProduct(product) {
     const errors = [];
 
-    if (!product.name || product.name.length < 3 || product.name.length > 255) {
+    if (this.validator.validateString(product.name, 3, 255)) {
       errors.push('Product name must be between 3 and 255 characters');
     }
 
-    if (product.stock < 0 || !Number.isInteger(product.stock)) {
+    if (this.validator.isPositiveInteger(product.stock)) {
       errors.push('Stock must be a positive integer number');
     }
 
-    if (product.price < 0 || typeof product.price !== 'number') {
+    if (this.validator.isPositiveFloat(product.price)) {
       errors.push('Price must be a positive float number');
     }
 
     return errors;
   }
-
   validateUpdateProduct(product) {
     const errors = [];
+
+    if (product.name && this.validator.validateString(product.name, 3, 255)) {
+      errors.push('Product name must be between 3 and 255 characters');
+    }
+
+    if (product.stock && !this.validator.isPositiveInteger(product.stock)) {
+      errors.push('Stock must be a positive integer number');
+    }
+
+    if (product.price && !this.validator.isPositiveFloat(product.price)) {
+      errors.push('Price must be a positive float number');
+    }
+    return errors;
+  }
+
+  getUpdateProduct(product) {
     const fields = ['name', 'price', 'stock'];
     const fieldsToUpdate = {};
     fields.forEach((field) => {
@@ -41,159 +59,84 @@ class ProductController {
   async findAllBySupplier(supplierId) {
     try {
       const products = await this.repository.findAll(supplierId);
-      return {
-        body: products.map((product) => this.deserialize(product)),
-        status: 200,
-      };
+      return responses.ok(products.map((product) => this.deserialize(product)));
     } catch (error) {
-      console.log(error);
-      return {
-        error: 'An error occurred while fetching products',
-        status: 500,
-      };
+      return responses.internalServerError(
+        'An error occurred while fetching products'
+      );
     }
   }
 
-  async findOne(supplierId, productId) {
+  async findOne({ supplierId, productId }) {
     try {
-      const result = await this.repository.findOne(supplierId, productId);
-      if (!result) {
-        return {
-          body: { error: 'Product not found' },
-          status: 404,
-        };
+      const product = await this.repository.findOne({ supplierId, productId });
+      if (!product) {
+        return responses.notFound('Product not found');
       }
-      return {
-        body: this.deserialize(result),
-        status: 200,
-      };
+      return responses.ok(this.deserialize(product));
     } catch (error) {
-      return {
-        body: {
-          error: 'An error occurred while fetching product',
-        },
-        status: 500,
-      };
+      return responses.internalServerError(
+        'An error occurred while fetching product'
+      );
     }
   }
 
-  async create(body) {
+  async create({ supplierId, ...body }) {
+    console.log(body);
     try {
-      const errors = this.validateProduct(body);
+      const errors = this.validateCreateProduct(body);
 
       if (errors.length) {
-        return {
-          body: {
-            error: errors,
-          },
-          status: 400,
-        };
+        return responses.badRequest(errors);
       }
-      const product = await this.repository.create(body);
-      return {
-        body: this.deserialize(product),
-        status: 201,
-      };
+      const product = await this.repository.create({ supplierId, ...body });
+      return responses.created(this.deserialize(product));
     } catch (error) {
+      console.log(error);
       if (error.name === 'SequelizeValidationError') {
         const messages = error.errors.map((err) => err.message);
-        return {
-          body: {
-            error: messages,
-          },
-          status: 400,
-        };
+        return responses.badRequest(messages);
       }
-      return {
-        body: {
-          error: 'An error occurred while creating product',
-        },
-        status: 500,
-      };
+      return responses.internalServerError(
+        'An error occurred while creating product'
+      );
     }
   }
 
-  async update(body) {
+  async update({ supplierId, productId, ...body }) {
     try {
-      const { id, supplierId, ...data } = body;
-      const fieldsToUpdate = this.validateUpdateProduct(data);
+      const fieldsToUpdate = this.getUpdateProduct(body);
       if (Object.keys(fieldsToUpdate).length === 0) {
-        return {
-          body: {
-            error: 'No fields to update',
-          },
-          status: 400,
-        };
+        return responses.badRequest('No fields to update');
       }
 
-      await this.repository.update({ id, supplierId, fieldsToUpdate });
-      return {
-        body: null,
-        status: 204,
-      };
+      const errors = this.validateUpdateProduct(body);
+      console.log(errors);
+      if (errors.length) {
+        return responses.badRequest(errors);
+      }
+
+      await this.repository.update({ productId, supplierId, fieldsToUpdate });
+      return responses.noContent();
     } catch (error) {
       if (error.name === 'SequelizeValidationError') {
         const messages = error.errors.map((err) => err.message);
-        return {
-          body: {
-            error: messages,
-          },
-          status: 400,
-        };
+        return responses.badRequest(messages);
       }
-      console.log(error);
-      return {
-        body: {
-          error: 'An error occurred while updating product',
-        },
-        status: 500,
-      };
+      return responses.internalServerError(
+        'An error occurred while updating product'
+      );
     }
   }
 
   async delete(body) {
     try {
       await this.repository.delete(body);
-      return {
-        body: null,
-        status: 204,
-      };
+      return responses.noContent();
     } catch (error) {
-      return {
-        body: {
-          error: 'An error occurred while deleting product',
-        },
-        status: 500,
-      };
-    }
-  }
-
-  async reduceStock(body) {
-    try {
-      const { id, supplierId, ...data } = body;
-      const product = await this.repository.findOne(supplierId, id);
-      const { stock } = product;
-      if (stock < data.quantity || data.quantity < 0) {
-        return {
-          body: {
-            error: 'Stock is not enough',
-          },
-          status: 400,
-        };
-      }
-      const newStock = stock - data.quantity;
-      await this.repository.reduceStock({ id, supplierId, stock: newStock });
-      return {
-        body: null,
-        status: 204,
-      };
-    } catch (error) {
-      return {
-        body: {
-          error: 'An error occurred while reducing stock',
-        },
-        status: 500,
-      };
+      return responses.internalServerError(
+        'An error occurred while deleting product'
+      );
     }
   }
 }

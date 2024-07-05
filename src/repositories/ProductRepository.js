@@ -10,7 +10,7 @@ class ProductsRepository {
     });
   }
 
-  async findOne(supplierId, productId) {
+  async findOne({ supplierId, productId }) {
     return Product.findOne({
       where: {
         id: productId,
@@ -23,27 +23,22 @@ class ProductsRepository {
     return Product.create(data);
   }
 
-  async update({ fieldsToUpdate, ...data }) {
-    return Product.update(fieldsToUpdate, { where: data });
+  async update({ fieldsToUpdate, productId, supplierId }) {
+    return Product.update(fieldsToUpdate, {
+      where: {
+        id: productId,
+        supplierId,
+      },
+    });
   }
 
-  async delete(data) {
-    return Product.destroy({ where: data });
-  }
-
-  async reduceStock({ id, supplierId, stock }) {
-    const transaction = await database.transaction();
-    try {
-      await Product.update(
-        { stock },
-        { where: { id, supplierId }, transaction }
-      );
-
-      await transaction.commit();
-    } catch (error) {
-      await transaction.rollback();
-      // throw new Error('Error reducing stock');
-    }
+  async delete({ supplierId, productId }) {
+    return Product.destroy({
+      where: {
+        id: productId,
+        supplierId,
+      },
+    });
   }
 }
 
